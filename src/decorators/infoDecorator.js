@@ -15,6 +15,7 @@ const Decorator = (item) => {
     userLastName: item.userLastName,
     userIdNumber: item.userIdNumber,
     email: item.email,
+    selectSubject:item.selectSubject,
     // createdAt: moment(user.createdAt).format(constants.DATETIME_FORMAT),
     // updatedAt: moment(user.updatedAt).format(constants.DATETIME_FORMAT),
   }

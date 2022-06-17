@@ -21,15 +21,15 @@ router.get("/", async (request, response, next) => {
 });
 
 router.get("/:id", async (request, response, next) => {
-    const data = await infoModel.find({ _id:request.params.id });
-  
-    const decorator = await data.map((info) => infoDecorator.Decorator(info));
-    response.json({
-      code: responseCode.SUCCESS,
-      message: "success",
-      data: decorator,
-    });
+  const data = await infoModel.find({ _id: request.params.id });
+
+  const decorator = await data.map((info) => infoDecorator.Decorator(info));
+  response.json({
+    code: responseCode.SUCCESS,
+    message: "success",
+    data: decorator,
   });
+});
 
 router.post("/", async (request, response, next) => {
   const informationModel = await infoModel(request.body).save();
@@ -46,14 +46,42 @@ router.post("/update", async (request, response, next) => {
     { _id: request.body.id },
     {
       $set: {
-        "userFirstName": request.body.userFirstName,
-        "userLastName": request.body.userLastName,
-        "userIdNumber": request.body.userIdNumber,
-        "email": request.body.email,
+        userFirstName: request.body.userFirstName,
+        userLastName: request.body.userLastName,
+        userIdNumber: request.body.userIdNumber,
+        email: request.body.email,
       },
     }
   );
   const decorator = await infoDecorator.Decorator(informationModel);
+  response.json({
+    code: responseCode.SUCCESS,
+    message: "success",
+    data: decorator,
+  });
+});
+
+router.post("/upsubject", async (request, response, next) => {
+  const informationModel = await infoModel.findOneAndUpdate(
+    { _id: request.body.id },
+    {
+      $set: {
+        selectSubject: request.body.selectSubject,
+      },
+    },
+    { new: true }
+  );
+  const decorator = await infoDecorator.Decorator(informationModel);
+  response.json({
+    code: responseCode.SUCCESS,
+    message: "success",
+    data: decorator,
+  });
+});
+
+router.get("/checkinfo/:id", async (request, response, next) => {
+  const data = await infoModel.find({ userLineId: request.params.id });
+  const decorator = await data.map((info) => infoDecorator.Decorator(info));
   response.json({
     code: responseCode.SUCCESS,
     message: "success",
