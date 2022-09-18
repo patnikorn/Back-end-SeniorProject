@@ -10,13 +10,19 @@ const infoDecorator = require("../../decorators/infoDecorator");
 const router = express.Router();
 
 router.get("/", async (request, response, next) => {
-  const data = await infoModel.find();
-
-  const decorator = await data.map((info) => infoDecorator.Decorator(info));
+  const data1 = await infoModel.find({selectSubject:"DataScience"});
+  const data2 = await infoModel.find({selectSubject:"SoftwareInnovation"});
+  const data3 = await infoModel.find({selectSubject: {$nin: ['DataScience', 'SoftwareInnovation']}});
+  console.log(data1)
+  const DataScience = await data1.map((info) => infoDecorator.Decorator(info));
+  const SoftwareInnovation = await data2.map((info) => infoDecorator.Decorator(info));
+  const other = await data3.map((info) => infoDecorator.Decorator(info));
   response.json({
     code: responseCode.SUCCESS,
     message: "success",
-    data: decorator,
+    DataScience: DataScience,
+    SoftwareInnovation:SoftwareInnovation,
+    other:other,
   });
 });
 

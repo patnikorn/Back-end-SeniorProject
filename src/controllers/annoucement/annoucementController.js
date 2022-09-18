@@ -3,11 +3,15 @@ const express = require("express");
 const Joi = require("joi");
 const Validate = require("express-joi-validator");
 const responseCode = require("../../configs/responseCode");
-
+const infoModel = require("../../models/infoModel");
 const announcementModel = require("../../models/announcementModel");
 const annoucementDecorators = require("../../decorators/annoucementDecorators");
+const line = require('@line/bot-sdk');
 
 const router = express.Router();
+const client = new line.Client({
+  channelAccessToken: "qHqeiOFqXiTCz718mHMiSv5XoB6N5de0B6mKe1f3Wesc8xKPiAQj158cXGE7lWZVQJ2a4bv9i1+JSkMNduw3iC7wLQuqvHjjDBRuPs39rFTH0Czzlj8JQUDZ7oyhPjQ059RuoOQgD4YsA6/ZDrxPSwdB04t89/1O/w1cDnyilFU="
+});
 
 router.get("/", async (request, response, next) => {
   const data = await announcementModel.find();
@@ -43,8 +47,23 @@ router.get("/:id", async (request, response, next) => {
   });
 
 router.post("/", async (request, response, next) => {
-    console.log(request.body)
+  console.log(request.body)
   const announcement = await announcementModel(request.body).save();
+  const message = {
+    type: 'text',
+    text: `${request.body.title} \n ${request.body.subTitle}`
+};
+  const userinfo = await infoModel.find()
+  userinfo.map((tt) => {
+    console.log(tt.userLineId)
+    client.pushMessage(tt.userLineId, message)
+        .then((res) => {
+            console.log(res)
+        })
+        .catch((err) => {
+            console.log(err)
+        });
+})
   //ตั้งตัวแปลใหม่ ไม่ให้ซ้ำกับ model
   const decorator = await annoucementDecorators.Decorator(announcement);
   //ตั้งตัวแปลใหม่ ไม่ให้ซ้ำกับ model
